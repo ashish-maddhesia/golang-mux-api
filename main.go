@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/nonameb3/golang-mux-api/controllers"
 )
 
 func main() {

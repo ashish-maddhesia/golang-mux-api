@@ -1,4 +1,4 @@
-package main
+package model
 
 // Init books var as a slice Book struct
 var books []Book
