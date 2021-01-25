@@ -8,17 +8,20 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/nonameb3/golang-mux-api/model"
 )
 
-func getBooks(w http.ResponseWriter, r *http.Request) {
-	result := ResponseList{false, "", books}
+// GetBooks function
+func GetBooks(w http.ResponseWriter, r *http.Request) {
+	result := ResponseList{false, "", model.Books}
 	result.responseBody(r.Header.Get("Content-type"), w)
 }
 
-func getBook(w http.ResponseWriter, r *http.Request) {
+// GetBook function
+func GetBook(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r) // Gets params
-	var book *Book
-	for _, b := range books {
+	var book *model.Book
+	for _, b := range model.Books {
 		if b.ID == params["ID"] {
 			book = &b
 			break
@@ -29,8 +32,9 @@ func getBook(w http.ResponseWriter, r *http.Request) {
 	result.responseBody(r.Header.Get("Content-type"), w)
 }
 
-func createBook(w http.ResponseWriter, r *http.Request) {
-	var newBook Book
+// CreateBook function
+func CreateBook(w http.ResponseWriter, r *http.Request) {
+	var newBook model.Book
 	err := json.NewDecoder(r.Body).Decode(&newBook)
 	if err != nil {
 		result := Response{true, err.Error(), nil}
@@ -39,20 +43,21 @@ func createBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newBook.ID = strconv.Itoa(rand.Intn(100000)) // Mock ID - not safe
-	books = append(books, newBook)
+	model.Books = append(model.Books, newBook)
 
 	result := Response{false, "", &newBook}
 	result.responseBody(r.Header.Get("Content-type"), w)
 }
 
-func updateBook(w http.ResponseWriter, r *http.Request) {
+// UpdateBook function
+func UpdateBook(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r) // Gets params
-	for idx, b := range books {
+	for idx, b := range model.Books {
 		if b.ID == params["ID"] {
-			var newBook Book
+			var newBook model.Book
 			_ = json.NewDecoder(r.Body).Decode(&newBook)
 			newBook.ID = params["ID"]
-			books[idx] = newBook
+			model.Books[idx] = newBook
 			result := Response{false, "", &newBook}
 			result.responseBody(r.Header.Get("Content-type"), w)
 			return
@@ -62,22 +67,25 @@ func updateBook(w http.ResponseWriter, r *http.Request) {
 	result.responseBody(r.Header.Get("Content-type"), w)
 }
 
-func deleteBook(w http.ResponseWriter, r *http.Request) {
+// DeleteBook function
+func DeleteBook(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r) // Gets params
-	for idx, b := range books {
+	for idx, b := range model.Books {
 		if b.ID == params["ID"] {
-			books = append(books[:idx], books[idx+1:]...)
+			model.Books = append(model.Books[:idx], model.Books[idx+1:]...)
 		}
 	}
-	result := ResponseList{false, "", books}
+	result := ResponseList{false, "", model.Books}
 	result.responseBody(r.Header.Get("Content-type"), w)
 }
 
-func setString(w http.ResponseWriter, r *http.Request) {
+// SetString function
+func SetString(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Hello world!")
 }
 
-func getJSON(w http.ResponseWriter, r *http.Request) {
+// GetJSON function
+func GetJSON(w http.ResponseWriter, r *http.Request) {
 	result := Response{false, "Hello there!", nil}
 	result.responseBody(r.Header.Get("Content-type"), w)
 }
