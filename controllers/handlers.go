@@ -19,38 +19,35 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 
 // GetBook function
 func GetBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r) // Gets params
 	var book *model.Book
 	for _, b := range model.Books {
 		if b.ID == params["ID"] {
 			book = &b
-			break
+			json.NewEncoder(w).Encode(book)
+			return
 		}
 	}
 
-	result := Response{false, "", book}
-	result.responseBody(r.Header.Get("Content-type"), w)
+	http.Error(w," book not found",http.StatusNotFound)
+	
 }
 
 // CreateBook function
 func CreateBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	var newBook model.Book
-	err := json.NewDecoder(r.Body).Decode(&newBook)
-	if err != nil {
-		result := Response{true, err.Error(), nil}
-		result.responseBody(r.Header.Get("Content-type"), w)
-		return
-	}
-
+	_ := json.NewDecoder(r.Body).Decode(&newBook)
 	newBook.ID = strconv.Itoa(rand.Intn(100000)) // Mock ID - not safe
 	model.Books = append(model.Books, newBook)
-
-	result := Response{false, "", &newBook}
-	result.responseBody(r.Header.Get("Content-type"), w)
+    json.NewEncoder(w).Encode(newBook)
+	Fprintln(newBook. time.Now())
 }
 
 // UpdateBook function
 func UpdateBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r) // Gets params
 	for idx, b := range model.Books {
 		if b.ID == params["ID"] {
@@ -59,24 +56,26 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 			newBook.ID = params["ID"]
 			model.Books[idx] = newBook
 			result := Response{false, "", &newBook}
-			result.responseBody(r.Header.Get("Content-type"), w)
+			Fprintln(result.time.Now())
 			return
 		}
 	}
-	result := Response{false, "", nil}
-	result.responseBody(r.Header.Get("Content-type"), w)
+	
+	
 }
 
 // DeleteBook function
 func DeleteBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r) // Gets params
-	for idx, b := range model.Books {
+    for idx, b := range model.Books {
 		if b.ID == params["ID"] {
 			model.Books = append(model.Books[:idx], model.Books[idx+1:]...)
+			return
 		}
 	}
-	result := ResponseList{false, "", model.Books}
-	result.responseBody(r.Header.Get("Content-type"), w)
+	json.NewEncoder(w).Encode(b)
+	
 }
 
 // SetString function
